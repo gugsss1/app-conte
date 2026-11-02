@@ -1,0 +1,994 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>App conte</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Open+Sans:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: phone-shaped app on a deep-navy stage with glass cubes; full-bleed on real phones. Single dark look by choice. */
+:root{
+  --navy:#00022a;
+  --bg:#05072f;
+  --bg-2:#0a0c3a;
+  --surface:rgba(255,255,255,.055);
+  --surface-2:rgba(255,255,255,.09);
+  --line:rgba(190,180,255,.13);
+  --fg:#f3f2ff;
+  --muted:#a3a2c9;
+  --dim:#6f6e9a;
+  --mag:#fe178d;
+  --vio:#8423b5;
+  --cya:#02c1fe;
+  --ok:#3be3a6;
+  --warn:#ffc35a;
+  --grad:linear-gradient(100deg,#fe178d 0%,#8423b5 52%,#02c1fe 100%);
+  --grad-d:linear-gradient(135deg,#fe178d 0%,#8423b5 50%,#02c1fe 100%);
+  --f-display:"Montserrat",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-body:"Open Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --r-lg:26px;--r-md:18px;--r-sm:12px;
+  color-scheme:dark;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{height:100%;box-sizing:border-box}
+body{height:100%;margin:0;background:var(--navy);color:var(--fg);font-family:var(--f-body);font-size:14px;overflow:hidden;display:flex;align-items:center;justify-content:center;
+  padding-left:max(0px, env(safe-area-inset-left, 0px));padding-right:max(0px, env(safe-area-inset-right, 0px))}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;padding:0}
+button:focus-visible,input:focus-visible{outline:2px solid var(--cya);outline-offset:2px;border-radius:10px}
+.num{font-variant-numeric:tabular-nums}
+
+/* ---------- stage ---------- */
+#stage{position:fixed;inset:0;overflow:hidden;pointer-events:none;
+  background:
+   radial-gradient(60% 50% at 15% 85%, rgba(254,23,141,.22), transparent 70%),
+   radial-gradient(55% 45% at 90% 10%, rgba(2,193,254,.2), transparent 70%),
+   radial-gradient(70% 60% at 50% 50%, rgba(132,35,181,.18), transparent 75%), var(--navy)}
+.stage-copy{position:absolute;left:48px;top:50%;transform:translateY(-50%);max-width:300px}
+.stage-copy h1{font-family:var(--f-display);font-weight:800;font-size:44px;line-height:1.02;margin:16px 0 14px;letter-spacing:-.02em;text-wrap:balance}
+.stage-copy h1 span{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.stage-copy p{color:var(--muted);line-height:1.6;margin:0}
+.stage-copy small{display:block;margin-top:22px;color:var(--dim);font-size:12px;letter-spacing:.14em;text-transform:uppercase}
+@media (max-width:1060px){.stage-copy{display:none}}
+
+.cube{position:absolute;width:var(--s);height:var(--s);border-radius:26%;
+  background:linear-gradient(150deg,#ff4fd0 0%,#9b45ff 40%,#5d6bff 70%,#3bb4ff 100%);
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.28),inset -16px -20px 34px rgba(25,8,90,.6),inset 12px 14px 26px rgba(255,255,255,.38),0 40px 70px rgba(70,20,170,.5);
+  transform:rotate(var(--r));animation:float var(--d,10s) ease-in-out infinite;opacity:.95}
+.cube::after{content:"";position:absolute;inset:14%;border-radius:22%;background:radial-gradient(circle at 35% 30%,rgba(255,255,255,.45),transparent 60%);filter:blur(6px)}
+.cube.blur{filter:blur(3px);opacity:.7}
+@keyframes float{0%,100%{transform:translateY(0) rotate(var(--r))}50%{transform:translateY(-18px) rotate(calc(var(--r) + 8deg))}}
+
+/* ---------- device ---------- */
+.device{position:relative;width:392px;height:min(846px,calc(100% - 36px));border-radius:56px;padding:11px;
+  background:linear-gradient(160deg,#1c1f5c,#06072a 40%,#14164a);box-shadow:0 0 0 1px rgba(255,255,255,.08),0 50px 120px rgba(0,0,0,.6),0 0 90px rgba(132,35,181,.25);z-index:1}
+.screen{position:relative;width:100%;height:100%;border-radius:46px;overflow:hidden;background:var(--bg);isolation:isolate}
+.notch{position:absolute;top:10px;left:50%;transform:translateX(-50%);width:112px;height:32px;border-radius:20px;background:#000;z-index:60}
+.statusbar{position:absolute;top:0;left:0;right:0;height:50px;display:flex;align-items:center;justify-content:space-between;padding:6px 30px 0;font-weight:600;font-size:14px;z-index:55;pointer-events:none}
+.statusbar .sb-r{display:flex;gap:6px;align-items:center}
+:root{--top:52px}
+@media (max-width:520px){
+  body{padding:0}
+  .device{width:100%;height:100%;border-radius:0;padding:0;box-shadow:none;background:none}
+  .screen{border-radius:0}
+  .notch,.statusbar{display:none}
+  :root{--top:14px}
+  #stage .cube{display:none}
+}
+
+/* background inside screen */
+.screen-bg{position:absolute;inset:0;z-index:0;pointer-events:none;
+  background:radial-gradient(120% 50% at 100% 0%, rgba(2,193,254,.16), transparent 60%),radial-gradient(100% 45% at 0% 100%, rgba(254,23,141,.14), transparent 60%),var(--bg)}
+.pattern{position:absolute;inset:0;opacity:.05;background-size:64px 34px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 60'%3E%3Cpath d='M44.9 14.7A20 20 0 1 0 46.1 44.1L73.9 15.9A20 20 0 1 1 73.9 44.1L67 37.5' fill='none' stroke='white' stroke-width='5' stroke-linecap='round'/%3E%3C/svg%3E")}
+
+/* ---------- splash ---------- */
+#splash{position:absolute;inset:0;z-index:80;display:flex;flex-direction:column;align-items:center;justify-content:center;background:radial-gradient(70% 45% at 50% 45%, #1b0f55 0%, var(--navy) 70%);transition:opacity .7s ease, transform .9s cubic-bezier(.7,0,.2,1), filter .7s;cursor:pointer}
+#splash.out{opacity:0;transform:scale(1.15);filter:blur(12px);pointer-events:none}
+#splash .halo{position:absolute;width:320px;height:320px;border-radius:50%;background:conic-gradient(from 0deg,#fe178d,#8423b5,#02c1fe,#fe178d);filter:blur(70px);opacity:0;animation:halo 2.4s 1s ease forwards, spin 12s linear infinite}
+@keyframes halo{to{opacity:.35}}
+@keyframes spin{to{transform:rotate(360deg)}}
+.sp-sym{width:190px;position:relative;filter:drop-shadow(0 0 22px rgba(254,23,141,.45)) drop-shadow(0 0 30px rgba(2,193,254,.35))}
+.sp-sym path{stroke-dasharray:var(--len);stroke-dashoffset:var(--len);animation:draw 1.9s .3s cubic-bezier(.65,0,.35,1) forwards}
+@keyframes draw{to{stroke-dashoffset:0}}
+.sp-word{font-family:var(--f-display);font-weight:800;font-size:58px;letter-spacing:-.03em;margin-top:6px;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent;opacity:0;transform:translateY(12px);animation:rise .8s 1.7s ease forwards;position:relative}
+.sp-tag{font-weight:600;font-size:16px;color:#e9e6ff;opacity:0;animation:rise .8s 2.2s ease forwards;position:relative}
+.sp-auth{position:absolute;bottom:13%;display:flex;flex-direction:column;align-items:center;gap:14px;opacity:0;animation:rise .6s 3s ease forwards}
+.scan{position:relative;width:64px;height:64px;border-radius:20px;display:grid;place-items:center;background:var(--surface);border:1px solid var(--line)}
+.scan::before{content:"";position:absolute;inset:-2px;border-radius:22px;padding:2px;background:conic-gradient(from var(--a,0deg),transparent 0 60%,#fe178d,#02c1fe);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;animation:scanspin 1.1s linear infinite}
+@property --a{syntax:"<angle>";inherits:false;initial-value:0deg}
+@keyframes scanspin{to{--a:360deg}}
+.scan.ok::before{animation:none;background:var(--grad)}
+.scan .line{position:absolute;left:12px;right:12px;height:2px;background:var(--cya);box-shadow:0 0 12px var(--cya);top:14px;animation:sweep 1.2s ease-in-out infinite alternate}
+.scan.ok .line{display:none}
+@keyframes sweep{to{top:48px}}
+.sp-auth p{margin:0;font-size:13px;color:var(--muted);min-height:20px}
+.sp-auth p b{color:var(--fg)}
+.sp-skip{position:absolute;bottom:calc(16px + env(safe-area-inset-bottom,0px));font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim)}
+@keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+
+/* ---------- views ---------- */
+.views{position:absolute;inset:0;z-index:1}
+.view{position:absolute;inset:0;overflow-y:auto;overflow-x:hidden;padding-top:var(--top);padding-bottom:118px;
+  padding-left:max(18px, env(safe-area-inset-left,0px));padding-right:max(18px, env(safe-area-inset-right,0px));
+  opacity:0;visibility:hidden;transform:translateX(18px);transition:opacity .35s ease,transform .45s cubic-bezier(.2,.8,.2,1),visibility 0s .45s;scrollbar-width:none}
+.view::-webkit-scrollbar{display:none}
+.view.active{opacity:1;visibility:visible;transform:none;transition:opacity .35s ease,transform .45s cubic-bezier(.2,.8,.2,1),visibility 0s}
+.view > *{display:block}
+.stack{display:flex;flex-direction:column;gap:22px}
+.app-in .view.active .rv{animation:rise .6s both;animation-delay:calc(var(--i,0) * 70ms)}
+
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:46px}
+.topbar .t{font-family:var(--f-display);font-weight:700;font-size:22px;letter-spacing:-.01em}
+.icon-btn{width:44px;height:44px;border-radius:14px;display:grid;place-items:center;background:var(--surface);border:1px solid var(--line);position:relative;flex:none}
+.icon-btn .dot{position:absolute;top:10px;right:11px;width:8px;height:8px;border-radius:50%;background:var(--mag);box-shadow:0 0 10px var(--mag)}
+.brand-mini{display:flex;align-items:center;gap:10px}
+.brand-mini svg{width:46px}
+.hello small{display:block;color:var(--muted);font-size:12px}
+.hello b{font-family:var(--f-display);font-size:18px;font-weight:700}
+
+.sec-h{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:12px}
+.sec-h h3{margin:0;font-family:var(--f-display);font-weight:700;font-size:16px}
+.sec-h button{font-size:12px;font-weight:600;color:var(--cya)}
+.eyebrow{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:600}
+
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);padding:18px}
+.glass{background:linear-gradient(160deg,rgba(255,255,255,.1),rgba(255,255,255,.03));border:1px solid rgba(255,255,255,.14);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
+
+/* hero protection card */
+.hero{position:relative;border-radius:30px;padding:20px;overflow:hidden;background:linear-gradient(140deg,#2b0a4f 0%,#120d52 55%,#032a5c 100%);border:1px solid rgba(255,255,255,.12)}
+.hero::before{content:"";position:absolute;inset:0;background:radial-gradient(70% 90% at 0% 0%,rgba(254,23,141,.45),transparent 60%),radial-gradient(70% 90% at 100% 100%,rgba(2,193,254,.4),transparent 60%);z-index:0}
+.hero > *{position:relative}
+.hero-top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.chip{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border-radius:99px;font-size:11px;font-weight:700;letter-spacing:.04em;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.18)}
+.chip i{width:7px;height:7px;border-radius:50%;background:var(--ok);box-shadow:0 0 8px var(--ok)}
+.plan-name{font-family:var(--f-display);font-weight:800;font-size:24px;margin:8px 0 2px;letter-spacing:-.02em}
+.hero-body{display:flex;align-items:center;gap:16px;margin-top:16px}
+.ringwrap{position:relative;flex:none;display:grid;place-items:center}
+.ringwrap .rc{position:absolute;text-align:center}
+.ringwrap .rc b{font-family:var(--f-display);font-size:24px;font-weight:800;display:block;line-height:1}
+.ringwrap .rc small{font-size:10px;color:#d4d0ff;letter-spacing:.06em}
+.ring-track{stroke:rgba(255,255,255,.12)}
+.ring-bar{transition:stroke-dashoffset 1.2s cubic-bezier(.2,.8,.2,1)}
+.net{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px;flex:1;min-width:0}
+.net li{display:flex;align-items:center;gap:8px;font-size:13px}
+.net li .st{width:20px;height:20px;border-radius:7px;display:grid;place-items:center;flex:none;background:rgba(59,227,166,.18);color:var(--ok)}
+.net li.off .st{background:rgba(255,195,90,.15);color:var(--warn)}
+.net li span{min-width:0;flex:1}
+.net li em{font-style:normal;font-size:11px;color:#cfcaff}
+.hero-cta{margin-top:16px;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 14px;border-radius:16px;background:rgba(0,2,42,.45);border:1px solid rgba(255,255,255,.1);font-size:12.5px;width:100%;text-align:left}
+.hero-cta b{color:#fff}
+.hero-cta .go{width:30px;height:30px;border-radius:10px;background:var(--grad);display:grid;place-items:center;flex:none}
+
+/* quick actions */
+.quick{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.qa{display:flex;flex-direction:column;align-items:center;gap:8px;font-size:11.5px;font-weight:600;color:#dcdaf7}
+.qa .qi{width:100%;aspect-ratio:1;max-width:72px;border-radius:22px;display:grid;place-items:center;background:var(--surface);border:1px solid var(--line);position:relative;overflow:hidden;transition:transform .2s}
+.qa .qi::after{content:"";position:absolute;inset:auto -20% -60% -20%;height:80%;background:var(--grad);filter:blur(18px);opacity:.35}
+.qa:active .qi{transform:scale(.94)}
+.qa svg{position:relative;z-index:1}
+
+/* money */
+.money-bar{display:flex;align-items:center;justify-content:space-between;padding:18px 20px;border-radius:22px;background:var(--grad);box-shadow:0 18px 40px rgba(132,35,181,.4)}
+.money-bar .v{font-family:var(--f-display);font-weight:700;font-size:28px;letter-spacing:-.01em}
+.money-bar small{display:block;font-size:11px;opacity:.85;font-weight:600;letter-spacing:.06em;text-transform:uppercase}
+.eye{width:44px;height:44px;border-radius:14px;display:grid;place-items:center;background:rgba(255,255,255,.18)}
+
+/* earnings chart */
+.chart{display:grid;grid-template-columns:repeat(7,1fr);align-items:end;gap:8px;height:120px;margin-top:14px}
+.bar{display:flex;flex-direction:column;align-items:center;gap:6px;height:100%;justify-content:flex-end}
+.bar i{display:block;width:100%;max-width:26px;border-radius:9px 9px 5px 5px;background:linear-gradient(180deg,rgba(2,193,254,.9),rgba(132,35,181,.55));transform-origin:bottom;animation:grow .9s cubic-bezier(.2,.8,.2,1) both}
+.bar.hi i{background:var(--grad-d);box-shadow:0 0 18px rgba(254,23,141,.45)}
+.bar span{font-size:10.5px;color:var(--muted)}
+@keyframes grow{from{transform:scaleY(.05)}}
+.earn-head{display:flex;justify-content:space-between;align-items:flex-end;gap:10px}
+.earn-head b{font-family:var(--f-display);font-size:24px;font-weight:700}
+.delta{font-size:12px;color:var(--ok);font-weight:600}
+.save-row{margin-top:16px;display:flex;gap:10px;align-items:center;padding-top:14px;border-top:1px solid var(--line)}
+.save-row p{margin:0;font-size:12.5px;color:var(--muted);flex:1;line-height:1.45}
+.save-row p b{color:var(--fg)}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:46px;padding:0 18px;border-radius:15px;font-weight:700;font-size:14px;background:var(--grad);box-shadow:0 10px 26px rgba(254,23,141,.28);white-space:nowrap;transition:transform .15s,filter .2s}
+.btn:active{transform:scale(.97)}
+.btn.ghost{background:var(--surface-2);box-shadow:none;border:1px solid var(--line)}
+.btn.sm{height:38px;padding:0 14px;font-size:13px;border-radius:12px}
+.btn.block{width:100%}
+.btn[disabled]{opacity:.45;pointer-events:none}
+
+/* horizontal scroller */
+.hscroll{display:flex;gap:12px;overflow-x:auto;margin:0 calc(-1 * max(18px, env(safe-area-inset-left,0px)));padding:2px max(18px, env(safe-area-inset-left,0px)) 6px;scroll-snap-type:x mandatory;scrollbar-width:none}
+.hscroll::-webkit-scrollbar{display:none}
+.perk{flex:none;width:150px;scroll-snap-align:start;border-radius:22px;padding:14px;background:var(--surface);border:1px solid var(--line);display:flex;flex-direction:column;gap:10px;position:relative;text-align:left}
+.perk .pi{width:40px;height:40px;border-radius:13px;display:grid;place-items:center;background:var(--surface-2)}
+.perk .off{font-family:var(--f-display);font-weight:800;font-size:26px;line-height:1;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.perk p{margin:0;font-size:12.5px;font-weight:600;line-height:1.3}
+.perk small{color:var(--muted);font-size:11px}
+.perk.locked{opacity:.7}
+.perk .lk{position:absolute;top:12px;right:12px;color:var(--muted)}
+
+.tip{display:flex;gap:14px;align-items:flex-start;padding:16px;border-radius:22px;background:linear-gradient(120deg,rgba(254,23,141,.14),rgba(2,193,254,.1));border:1px solid var(--line)}
+.tip .ti{width:38px;height:38px;flex:none;border-radius:12px;background:var(--grad);display:grid;place-items:center}
+.tip p{margin:4px 0 0;font-size:13px;line-height:1.5;color:#dedcf8}
+
+/* reservas */
+.rings{display:flex;gap:14px}
+.rcard{flex:none;width:152px;scroll-snap-align:start;padding:14px 12px 16px;border-radius:24px;background:var(--surface);border:1px solid var(--line);display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center}
+.rcard .nm{font-weight:700;font-size:13.5px}
+.rcard .vv{font-family:var(--f-display);font-weight:700;font-size:15px}
+.rcard small{color:var(--muted);font-size:11px}
+.rcard.add{justify-content:center;border-style:dashed;color:var(--muted);min-height:220px}
+.rcard.add .pl{width:56px;height:56px;border-radius:18px;display:grid;place-items:center;background:var(--surface-2)}
+.actions2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.timeline{position:relative;list-style:none;margin:0;padding:0 0 0 18px}
+.timeline::before{content:"";position:absolute;left:4px;top:6px;bottom:6px;width:2px;border-radius:2px;background:linear-gradient(180deg,var(--mag),var(--vio),var(--cya))}
+.mov{display:grid;grid-template-columns:32px 1fr auto;gap:12px;align-items:center;padding:12px 0;border-bottom:1px solid var(--line)}
+.mov:last-child{border-bottom:0}
+.tri{width:32px;height:32px;border-radius:11px;display:grid;place-items:center}
+.tri.in{background:rgba(2,193,254,.14);color:var(--cya)}
+.tri.out{background:rgba(254,23,141,.14);color:var(--mag)}
+.mov .md b{display:block;font-size:13.5px}
+.mov .md small{color:var(--muted);font-size:11.5px}
+.mov .mv{font-family:var(--f-display);font-weight:700;font-size:14px;text-align:right}
+.mov .mv.out{color:#ff7cbd}
+
+/* seguros */
+.acc{border-radius:24px;overflow:hidden;background:var(--surface);border:1px solid var(--line)}
+.acc + .acc{margin-top:12px}
+.acc-h{width:100%;display:flex;align-items:center;gap:12px;padding:16px 18px;background:var(--grad);text-align:left}
+.acc-h .ah-t{flex:1;min-width:0}
+.acc-h b{font-family:var(--f-display);font-weight:700;font-size:17px;display:block}
+.acc-h small{font-size:11.5px;opacity:.9}
+.acc-h .chev{transition:transform .3s}
+.acc.open .acc-h .chev{transform:rotate(180deg)}
+.acc-b{display:grid;grid-template-rows:0fr;transition:grid-template-rows .4s ease}
+.acc.open .acc-b{grid-template-rows:1fr}
+.acc-b > div{overflow:hidden}
+.acc-in{padding:18px;display:flex;flex-direction:column;gap:14px}
+.vehicle{display:flex;gap:14px;align-items:center}
+.vtile{width:96px;height:96px;flex:none;border-radius:26px;padding:2px;background:var(--grad)}
+.vtile > div{width:100%;height:100%;border-radius:24px;background:var(--bg-2);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;font-size:10.5px;font-weight:700;font-style:italic}
+.kv{display:grid;grid-template-columns:1fr 1fr;gap:10px 12px;flex:1;min-width:0}
+.kv div{min-width:0}
+.kv small{display:block;color:var(--muted);font-size:11px}
+.kv b{font-size:13px;word-break:break-word}
+.save-badge{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 14px;border-radius:16px;background:rgba(59,227,166,.08);border:1px solid rgba(59,227,166,.22);font-size:12.5px}
+.save-badge b{color:var(--ok);font-family:var(--f-display);font-size:15px}
+.outline-btn{display:flex;align-items:center;gap:12px;padding:14px 16px;border-radius:18px;position:relative;background:var(--bg-2);font-weight:600;width:100%;text-align:left}
+.outline-btn::before{content:"";position:absolute;inset:0;border-radius:18px;padding:2px;background:var(--grad);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude}
+.outline-btn span{flex:1}
+.outline-btn .ob-i{color:var(--mag)}
+.sos{display:flex;align-items:center;gap:14px;padding:16px;border-radius:22px;background:linear-gradient(120deg,rgba(254,23,141,.22),rgba(132,35,181,.18));border:1px solid rgba(254,23,141,.35);width:100%;text-align:left}
+.sos .si{width:46px;height:46px;border-radius:15px;background:var(--mag);display:grid;place-items:center;box-shadow:0 0 22px rgba(254,23,141,.6);flex:none;animation:pulse 2.2s infinite}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(254,23,141,.55)}60%{box-shadow:0 0 0 12px rgba(254,23,141,0)}}
+.sos b{display:block;font-family:var(--f-display);font-size:15px}
+.sos small{color:#e6c9ec;font-size:12px}
+.add-ins{width:100%;height:58px;border-radius:20px;display:grid;place-items:center;position:relative;background:var(--surface)}
+.add-ins::before{content:"";position:absolute;inset:0;border-radius:20px;padding:2px;background:var(--grad);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude}
+.note{font-size:11.5px;color:var(--dim);line-height:1.5}
+.empty-ins{display:flex;flex-direction:column;gap:12px}
+.empty-ins p{margin:0;color:var(--muted);font-size:13px;line-height:1.5}
+
+/* aprender */
+.track{display:flex;align-items:center;gap:14px;padding:14px;border-radius:20px;background:var(--surface);border:1px solid var(--line);width:100%;text-align:left}
+.track + .track{margin-top:10px}
+.track .tk-i{width:46px;height:46px;flex:none;border-radius:15px;display:grid;place-items:center;background:var(--surface-2)}
+.track .tk-b{flex:1;min-width:0}
+.track b{font-size:14px;display:block}
+.track small{color:var(--muted);font-size:11.5px}
+.pbar{height:6px;border-radius:6px;background:rgba(255,255,255,.08);margin-top:8px;overflow:hidden}
+.pbar i{display:block;height:100%;border-radius:6px;background:var(--grad);transition:width .6s}
+.sim .out{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}
+.sim .out div{padding:14px;border-radius:16px;background:var(--bg-2);border:1px solid var(--line)}
+.sim .out small{display:block;color:var(--muted);font-size:11px;margin-bottom:4px}
+.sim .out b{font-family:var(--f-display);font-size:18px;font-weight:700}
+.sim .out .big b{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.field{display:flex;flex-direction:column;gap:8px;margin-top:14px}
+.field label{display:flex;justify-content:space-between;font-size:12.5px;color:var(--muted)}
+.field label b{color:var(--fg)}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:6px;border-radius:6px;background:linear-gradient(90deg,var(--mag),var(--cya)) 0/var(--p,50%) 100% no-repeat, rgba(255,255,255,.1);outline-offset:6px}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;border-radius:50%;background:#fff;box-shadow:0 0 0 4px rgba(132,35,181,.6),0 4px 12px rgba(0,0,0,.4);cursor:pointer}
+input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;background:#fff;border:0;box-shadow:0 0 0 4px rgba(132,35,181,.6)}
+
+/* perfil */
+.profile{display:flex;align-items:center;gap:16px}
+.avatar{width:72px;height:72px;border-radius:24px;padding:2px;background:var(--grad);flex:none}
+.avatar > div{width:100%;height:100%;border-radius:22px;background:var(--bg-2);display:grid;place-items:center;font-family:var(--f-display);font-weight:800;font-size:28px}
+.profile h2{margin:0;font-family:var(--f-display);font-size:20px}
+.profile p{margin:4px 0 0;color:var(--muted);font-size:12.5px}
+.menu{border-radius:24px;background:var(--surface);border:1px solid var(--line);overflow:hidden}
+.mi{display:flex;align-items:center;gap:14px;padding:15px 16px;width:100%;text-align:left;border-bottom:1px solid var(--line)}
+.mi:last-child{border-bottom:0}
+.mi .mi-i{width:38px;height:38px;border-radius:12px;display:grid;place-items:center;background:var(--surface-2);flex:none}
+.mi span{flex:1;font-weight:600;font-size:14px}
+.mi small{color:var(--muted);font-size:12px}
+.foot{text-align:center;color:var(--dim);font-size:11.5px;display:flex;flex-direction:column;align-items:center;gap:8px}
+.foot svg{width:40px;opacity:.8}
+
+/* planos */
+.plan{border-radius:26px;padding:2px;background:var(--line);position:relative}
+.plan.cur{background:var(--grad)}
+.plan > div{border-radius:24px;background:var(--bg-2);padding:18px}
+.plan + .plan{margin-top:14px}
+.plan-h{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.plan-h h4{margin:0;font-family:var(--f-display);font-size:20px;font-weight:800}
+.plan-h .tg{font-size:11px;color:var(--muted);margin-top:2px}
+.price{text-align:right}
+.price b{font-family:var(--f-display);font-size:22px}
+.price small{display:block;color:var(--muted);font-size:11px}
+.plan .lv{display:flex;gap:4px;margin:12px 0}
+.plan .lv i{height:5px;flex:1;border-radius:5px;background:rgba(255,255,255,.1)}
+.plan .lv i.on{background:var(--grad)}
+.plan ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+.plan li{display:flex;gap:10px;font-size:13px;line-height:1.4;color:#dddbf6}
+.plan li svg{flex:none;color:var(--cya);margin-top:1px}
+.plan .prop{margin:14px 0 0;padding-top:12px;border-top:1px solid var(--line);font-size:12px;color:var(--muted);font-style:italic}
+.plan .pf{display:flex;justify-content:space-between;align-items:center;margin-top:14px;gap:10px}
+.cur-badge{position:absolute;top:-10px;left:20px;padding:4px 10px;border-radius:99px;background:var(--grad);font-size:10.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase}
+.disc-pill{display:inline-flex;align-items:center;gap:6px;padding:7px 10px;border-radius:12px;background:rgba(2,193,254,.12);color:#8fe2ff;font-size:12px;font-weight:700}
+.model{display:grid;gap:10px}
+.model div{display:flex;gap:12px;align-items:flex-start;padding:12px;border-radius:16px;background:var(--bg-2)}
+.model b{display:block;font-size:13px}
+.model p{margin:2px 0 0;font-size:12px;color:var(--muted);line-height:1.45}
+.model .n{width:28px;height:28px;flex:none;border-radius:9px;background:var(--grad);display:grid;place-items:center;font-weight:800;font-size:12px}
+
+/* tab bar */
+.tabbar{position:absolute;z-index:40;left:14px;right:14px;bottom:14px;height:72px;border-radius:26px;display:grid;grid-template-columns:repeat(5,1fr);padding:0 6px;
+  background:rgba(12,13,58,.72);backdrop-filter:blur(20px) saturate(1.4);-webkit-backdrop-filter:blur(20px) saturate(1.4);border:1px solid rgba(255,255,255,.1);box-shadow:0 20px 40px rgba(0,0,0,.45);transition:transform .5s cubic-bezier(.2,.8,.2,1)}
+.tab{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;font-size:10.5px;font-weight:600;color:var(--dim);position:relative;transition:color .25s}
+.tab.active{color:#fff}
+.tab .tglow{position:absolute;top:8px;width:46px;height:34px;border-radius:13px;background:var(--grad);opacity:0;transform:scale(.6);transition:all .35s cubic-bezier(.2,.8,.2,1);box-shadow:0 6px 18px rgba(254,23,141,.4)}
+.tab.active .tglow{opacity:1;transform:none}
+.tab svg,.tab span{position:relative}
+.tab svg{margin-top:2px}
+.pre .tabbar{transform:translateY(140%)}
+@media (max-width:520px){.tabbar{left:max(12px, env(safe-area-inset-left,0px));right:max(12px, env(safe-area-inset-right,0px));bottom:10px}}
+
+/* sheet */
+.backdrop{position:absolute;inset:0;z-index:70;background:rgba(0,2,30,.55);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);opacity:0;pointer-events:none;transition:opacity .3s}
+.backdrop.on{opacity:1;pointer-events:auto}
+.sheet{position:absolute;z-index:71;left:0;right:0;bottom:0;max-height:86%;overflow-y:auto;border-radius:30px 30px 0 0;background:linear-gradient(180deg,#14165a,#0a0c3a 30%);border-top:1px solid rgba(255,255,255,.14);
+  padding:10px max(20px, env(safe-area-inset-right,0px)) calc(26px + env(safe-area-inset-bottom,0px)) max(20px, env(safe-area-inset-left,0px));transform:translateY(105%);transition:transform .45s cubic-bezier(.2,.8,.2,1);scrollbar-width:none}
+.sheet.on{transform:none}
+.grab{width:42px;height:5px;border-radius:5px;background:rgba(255,255,255,.22);margin:0 auto 14px}
+.sheet h3{margin:0 0 4px;font-family:var(--f-display);font-size:20px;font-weight:700}
+.sheet .sub{margin:0 0 16px;color:var(--muted);font-size:13px;line-height:1.5}
+.sheet .stack{gap:14px}
+.opts{display:flex;flex-wrap:wrap;gap:8px}
+.opt{padding:10px 14px;border-radius:14px;background:var(--surface);border:1px solid var(--line);font-weight:600;font-size:13px}
+.opt.on{background:var(--grad);border-color:transparent}
+.amount{display:flex;align-items:center;gap:8px;padding:6px 6px 6px 16px;border-radius:18px;background:var(--bg-2);border:1px solid var(--line)}
+.amount span{font-family:var(--f-display);font-weight:700;color:var(--muted)}
+.amount input{flex:1;min-width:0;background:none;border:0;color:var(--fg);font-family:var(--f-display);font-weight:700;font-size:26px;padding:8px 0;outline:none}
+.tinput{width:100%;padding:14px 16px;border-radius:16px;background:var(--bg-2);border:1px solid var(--line);color:var(--fg);font:inherit;font-size:15px;outline:none}
+.tinput:focus,.amount:focus-within{border-color:var(--vio)}
+.list{display:flex;flex-direction:column}
+.li{display:flex;gap:12px;align-items:center;padding:13px 0;border-bottom:1px solid var(--line)}
+.li:last-child{border-bottom:0}
+.li .li-i{width:38px;height:38px;border-radius:12px;display:grid;place-items:center;background:var(--surface-2);flex:none;color:var(--cya)}
+.li .li-b{flex:1;min-width:0}
+.li b{display:block;font-size:13.5px}
+.li small{color:var(--muted);font-size:12px}
+.li .tag{font-size:11px;font-weight:700;padding:4px 8px;border-radius:8px;background:rgba(59,227,166,.12);color:var(--ok);white-space:nowrap}
+.li .tag.no{background:rgba(255,255,255,.07);color:var(--muted)}
+.phone-num{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:16px;border-radius:18px;background:var(--bg-2);border:1px solid var(--line)}
+.phone-num b{font-family:var(--f-display);font-size:22px;letter-spacing:.02em;user-select:all}
+.chat{display:flex;flex-direction:column;gap:10px}
+.msg{max-width:84%;padding:11px 14px;border-radius:18px;font-size:13.5px;line-height:1.45;animation:rise .35s both}
+.msg.bot{background:var(--surface-2);border-bottom-left-radius:6px}
+.msg.me{align-self:flex-end;background:var(--grad);border-bottom-right-radius:6px}
+.success{display:flex;flex-direction:column;align-items:center;text-align:center;gap:10px;padding:10px 0}
+.success .ok{width:76px;height:76px;border-radius:26px;background:var(--grad);display:grid;place-items:center;box-shadow:0 0 40px rgba(254,23,141,.5);animation:pop .5s cubic-bezier(.2,1.6,.4,1) both}
+@keyframes pop{from{transform:scale(.3);opacity:0}}
+.notif{display:flex;gap:12px;padding:12px 0;border-bottom:1px solid var(--line)}
+.notif:last-child{border-bottom:0}
+.notif .nd{width:8px;height:8px;border-radius:50%;background:var(--mag);margin-top:6px;flex:none;box-shadow:0 0 8px var(--mag)}
+.notif.read .nd{background:var(--dim);box-shadow:none}
+.notif b{font-size:13.5px;display:block}
+.notif p{margin:2px 0 0;font-size:12.5px;color:var(--muted);line-height:1.45}
+.notif small{color:var(--dim);font-size:11px}
+
+/* toast */
+.toast{position:absolute;z-index:90;left:50%;top:calc(var(--top) + 6px);transform:translate(-50%,-150%);display:flex;align-items:center;gap:10px;padding:12px 16px;border-radius:16px;background:rgba(20,22,80,.92);border:1px solid rgba(255,255,255,.14);backdrop-filter:blur(14px);box-shadow:0 14px 30px rgba(0,0,0,.4);font-size:13px;font-weight:600;width:max-content;max-width:calc(100% - 40px);transition:transform .45s cubic-bezier(.2,.8,.2,1)}
+.toast.on{transform:translate(-50%,0)}
+.toast i{width:24px;height:24px;border-radius:8px;background:var(--grad);display:grid;place-items:center;flex:none}
+
+.back{display:flex;align-items:center;gap:6px;font-weight:600;color:var(--muted)}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;animation-delay:0ms!important;transition-duration:.01ms!important}
+  .sp-sym path{stroke-dashoffset:0}
+}
+</style>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <linearGradient id="gc" x1="10" y1="0" x2="110" y2="0" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#fe178d"/><stop offset=".5" stop-color="#8423b5"/><stop offset="1" stop-color="#02c1fe"/>
+    </linearGradient>
+    <linearGradient id="gr" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#fe178d"/><stop offset=".5" stop-color="#8423b5"/><stop offset="1" stop-color="#02c1fe"/>
+    </linearGradient>
+  </defs>
+</svg>
+
+<div id="stage" aria-hidden="true">
+  <div class="cube" style="--s:150px;--r:-14deg;left:7%;bottom:8%;--d:11s"></div>
+  <div class="cube blur" style="--s:90px;--r:22deg;right:10%;top:10%;--d:9s"></div>
+  <div class="cube" style="--s:120px;--r:12deg;right:6%;bottom:14%;--d:12s"></div>
+  <div class="cube blur" style="--s:60px;--r:-30deg;left:30%;top:8%;--d:8s"></div>
+  <div class="stage-copy">
+    <svg viewBox="0 0 120 60" width="74"><path d="M44.9 14.7A20 20 0 1 0 46.1 44.1L73.9 15.9A20 20 0 1 1 73.9 44.1L67 37.5" fill="none" stroke="url(#gc)" stroke-width="9" stroke-linecap="round"/></svg>
+    <h1>Sua rotina, <span>mais protegida.</span></h1>
+    <p>Protótipo navegável do app conte: benefícios, seguros com desconto, reservas e educação financeira para quem vive do volante.</p>
+    <small>Uma conexão Clube Phi</small>
+  </div>
+</div>
+
+<div class="device">
+  <div class="screen pre" id="screen">
+    <div class="screen-bg"><div class="pattern"></div></div>
+    <div class="notch"></div>
+    <div class="statusbar"><span class="num">9:41</span><span class="sb-r">
+      <svg width="18" height="12" viewBox="0 0 18 12" fill="currentColor"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="5" width="3" height="7" rx="1"/><rect x="10" y="2.5" width="3" height="9.5" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1"/></svg>
+      <svg width="26" height="12" viewBox="0 0 26 12"><rect x=".5" y=".5" width="22" height="11" rx="3.5" fill="none" stroke="currentColor" opacity=".5"/><rect x="2" y="2" width="16" height="8" rx="2" fill="currentColor"/><rect x="23.5" y="4" width="2" height="4" rx="1" fill="currentColor" opacity=".5"/></svg>
+    </span></div>
+
+    <!-- SPLASH -->
+    <div id="splash" role="button" aria-label="Pular abertura" tabindex="0">
+      <div class="halo"></div>
+      <svg class="sp-sym" viewBox="0 0 120 60"><path id="spPath" d="M44.9 14.7A20 20 0 1 0 46.1 44.1L73.9 15.9A20 20 0 1 1 73.9 44.1L67 37.5" fill="none" stroke="url(#gc)" stroke-width="9" stroke-linecap="round"/></svg>
+      <div class="sp-word">conte</div>
+      <div class="sp-tag">É ter com quem contar.</div>
+      <div class="sp-auth">
+        <div class="scan" id="scan"><div class="line"></div><svg id="scanIcon" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.6" stroke-linecap="round"><path d="M4 8V6a2 2 0 0 1 2-2h2M16 4h2a2 2 0 0 1 2 2v2M20 16v2a2 2 0 0 1-2 2h-2M8 20H6a2 2 0 0 1-2-2v-2"/><path d="M9 10v1M15 10v1M12 10v3h-1M9.5 16c1.5 1 3.5 1 5 0"/></svg></div>
+        <p id="scanTxt">Reconhecendo você…</p>
+      </div>
+      <div class="sp-skip">Toque para entrar</div>
+    </div>
+
+    <div class="views" id="views">
+      <section class="view" id="v-home" aria-label="Início"></section>
+      <section class="view" id="v-reservas" aria-label="Reservas"></section>
+      <section class="view" id="v-seguros" aria-label="Seguros e Planos"></section>
+      <section class="view" id="v-aprender" aria-label="Educação financeira"></section>
+      <section class="view" id="v-perfil" aria-label="Perfil"></section>
+      <section class="view" id="v-planos" aria-label="Planos"></section>
+      <section class="view" id="v-beneficios" aria-label="Benefícios"></section>
+    </div>
+
+    <nav class="tabbar" id="tabbar" aria-label="Navegação principal"></nav>
+
+    <div class="backdrop" id="backdrop"></div>
+    <div class="sheet" id="sheet" role="dialog" aria-modal="true"><div class="grab"></div><div id="sheetBody"></div></div>
+    <div class="toast" id="toast" role="status"><i></i><span id="toastTxt"></span></div>
+  </div>
+</div>
+
+<script>
+(function(){
+const $ = s => document.querySelector(s);
+const brl = v => v.toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
+const SYM = (w=46) => `<svg viewBox="0 0 120 60" width="${w}" aria-hidden="true"><path d="M44.9 14.7A20 20 0 1 0 46.1 44.1L73.9 15.9A20 20 0 1 1 73.9 44.1L67 37.5" fill="none" stroke="url(#gc)" stroke-width="9" stroke-linecap="round"/></svg>`;
+
+const P = {
+  home:'<path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"/>',
+  target:'<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.4"/>',
+  shield:'<path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="M8.5 12l2.5 2.5 4.5-5"/>',
+  book:'<path d="M4 4h6a3 3 0 0 1 3 3v13a2 2 0 0 0-2-2H4zM20 4h-6a3 3 0 0 0-3 3v13a2 2 0 0 1 2-2h7z"/>',
+  user:'<circle cx="12" cy="8" r="4"/><path d="M4 21c1-4 4.5-6 8-6s7 2 8 6"/>',
+  bell:'<path d="M6 16v-5a6 6 0 1 1 12 0v5l2 2H4zM10 21h4"/>',
+  eye:'<path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>',
+  eyeoff:'<path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/><path d="M3 3l18 18"/>',
+  plus:'<path d="M12 5v14M5 12h14"/>',
+  minus:'<path d="M5 12h14"/>',
+  back:'<path d="M15 5l-7 7 7 7"/>',
+  chev:'<path d="M6 9l6 6 6-6"/>',
+  right:'<path d="M9 5l7 7-7 7"/>',
+  car:'<path d="M5 13l2-5a2 2 0 0 1 2-1h6a2 2 0 0 1 2 1l2 5M4 13h16v5H4zM7 18v2M17 18v2"/><circle cx="8" cy="15.5" r=".8"/><circle cx="16" cy="15.5" r=".8"/>',
+  search:'<circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/>',
+  heart:'<path d="M12 20s-7-4.5-7-10a4 4 0 0 1 7-2.5A4 4 0 0 1 19 10c0 5.5-7 10-7 10z"/>',
+  health:'<path d="M9.5 3.5h5v6h6v5h-6v6h-5v-6h-6v-5h6z"/>',
+  wrench:'<path d="M14.5 6.5a4 4 0 0 0 5 5l-8.5 8.5a2.1 2.1 0 0 1-3-3l8.5-8.5a4 4 0 0 0-2-2z"/>',
+  phone:'<path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z"/>',
+  gift:'<path d="M3 9h18v4H3zM5 13v8h14v-8M12 9v12M12 9c-2-4-6-4-6-1s6 1 6 1zM12 9c2-4 6-4 6-1s-6 1-6 1z"/>',
+  check:'<path d="M5 12.5l4.5 4.5L19 7.5"/>',
+  lock:'<rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>',
+  spark:'<path d="M12 3l2 6 6 2-6 2-2 6-2-6-6-2 6-2z"/>',
+  users:'<circle cx="9" cy="8" r="3.5"/><path d="M2 20c.8-3.5 3.6-5.5 7-5.5s6.2 2 7 5.5M16 4.5a3.5 3.5 0 0 1 0 7M18 14.5c2 .7 3.4 2.6 4 5.5"/>',
+  headset:'<path d="M4 14v-2a8 8 0 0 1 16 0v2M4 14h3v6H5a1 1 0 0 1-1-1zM20 14h-3v6h2a1 1 0 0 0 1-1z"/>',
+  up:'<path d="M12 19V5M5 12l7-7 7 7"/>',
+  down:'<path d="M12 5v14M5 12l7 7 7-7"/>',
+  replay:'<path d="M4 12a8 8 0 1 0 2.3-5.6M4 4v4h4"/>',
+  pin:'<path d="M12 21s-7-6-7-11a7 7 0 0 1 14 0c0 5-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/>',
+  drop:'<path d="M12 3s6 6.5 6 11a6 6 0 0 1-12 0c0-4.5 6-11 6-11z"/>',
+  tire:'<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3.5"/><path d="M12 3v5.5M12 15.5V21M3 12h5.5M15.5 12H21"/>',
+  wash:'<path d="M4 15h16l-1.5 5h-13zM7 15V9a5 5 0 0 1 10 0v6M9 4l-1-2M15 4l1-2M12 3V1"/>',
+  pill:'<rect x="3" y="8" width="18" height="8" rx="4" transform="rotate(-35 12 12)"/><path d="M9.5 8.5l5 7"/>',
+  dumbbell:'<path d="M6 7v10M3 9v6M18 7v10M21 9v6M6 12h12"/>',
+  fuel:'<path d="M4 21V5a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v16M3 21h12M4 10h10M14 8h2a2 2 0 0 1 2 2v7a1.5 1.5 0 0 0 3 0V9l-3-3"/>',
+  coin:'<circle cx="12" cy="12" r="9"/><path d="M14.5 9.5c-.5-1-1.5-1.5-2.5-1.5-1.4 0-2.5.8-2.5 2s1 1.7 2.5 2 2.5.8 2.5 2-1.1 2-2.5 2c-1 0-2-.5-2.5-1.5M12 6.5V8M12 16v1.5"/>',
+  doc:'<path d="M6 3h8l4 4v14H6zM14 3v4h4M9 12h6M9 16h6"/>',
+  info:'<circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.5"/>',
+  chat:'<path d="M4 5h16v11H9l-5 4z"/>',
+  star:'<path d="M12 3.5l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.9l-5.2 2.7 1-5.8L3.5 9.7l5.9-.9z"/>'
+};
+const ic = (n,s=22,extra='') => `<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" ${extra}>${P[n]}</svg>`;
+const icg = (n,s=22) => `<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="url(#gr)" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${P[n]}</svg>`;
+
+/* ---------------- data ---------------- */
+const PLANS = {
+  essencial:{key:'essencial',name:'Conte Essencial',short:'Essencial',level:1,price:19.9,ins:8,tag:'A porta de entrada',
+    prop:'Começar a construir uma rede de proteção para o profissional autônomo.',
+    items:['Conteúdos e ferramentas de educação financeira','Organização e planejamento financeiro','Planejamento da previdência e aposentadoria','Descontos em empresas e serviços parceiros','Acesso aos seguros parceiros com desconto','Benefícios básicos para o veículo','Atendimento padrão']},
+  protecao:{key:'protecao',name:'Conte Proteção',short:'Proteção',level:2,price:39.9,ins:15,tag:'Equilíbrio entre preço e benefícios',
+    prop:'Oferecer mais segurança para quem depende do trabalho com o veículo.',
+    items:['Tudo do Essencial','Maior desconto nos seguros parceiros','Orientação financeira personalizada','Mais benefícios e descontos para o veículo','Maior variedade de parceiros','Benefícios para a família','Atendimento prioritário']},
+  completo:{key:'completo',name:'Conte Completo',short:'Completo',level:3,price:69.9,ins:22,tag:'Proteção máxima para você e a família',
+    prop:'Oferecer uma rede de proteção mais completa para o profissional e sua família.',
+    items:['Tudo do Proteção','Maior desconto nos seguros parceiros','Benefícios exclusivos','Consultoria financeira periódica','Atendimento prioritário e diferenciado','Mais vantagens para familiares','Condições especiais em serviços automotivos']}
+};
+const PERKS = [
+  {id:'oleo',icon:'drop',name:'Troca de óleo',where:'Auto centers parceiros',d:[10,15,20]},
+  {id:'pneu',icon:'tire',name:'Pneus e alinhamento',where:'Rede de borracharias',d:[5,12,18]},
+  {id:'lava',icon:'wash',name:'Lavagem completa',where:'Lava-rápidos parceiros',d:[10,20,30]},
+  {id:'comb',icon:'fuel',name:'Cashback em combustível',where:'Postos parceiros',d:[2,3,5]},
+  {id:'farm',icon:'pill',name:'Farmácia para a família',where:'Redes de farmácia',d:[0,15,25]},
+  {id:'acad',icon:'dumbbell',name:'Academia',where:'Rede de academias',d:[0,0,30]},
+  {id:'mec',icon:'wrench',name:'Revisão preventiva',where:'Oficinas referenciadas',d:[0,10,20]}
+];
+const TRACKS = [
+  {id:'t1',icon:'coin',name:'Organize seus ganhos',sub:'Separe o dinheiro do carro do dinheiro da casa',done:4,total:5,
+    lesson:'Divida cada corrida em três partes antes de gastar: custo do carro (combustível, manutenção, parcela), contas da casa e você. Quem roda 10 horas por dia sente a diferença quando o carro para.'},
+  {id:'t2',icon:'shield',name:'Reserva de emergência',sub:'Quanto guardar para o carro parado',done:2,total:6,
+    lesson:'Uma boa meta é ter de 3 a 6 meses dos seus custos fixos guardados. Comece pequeno: guardar 10% do que entra na semana já cria o hábito.'},
+  {id:'t3',icon:'doc',name:'MEI para motoristas',sub:'Formalização, DAS e benefícios do INSS',done:0,total:4,
+    lesson:'Como MEI, você paga uma guia mensal (DAS) e passa a ter direito a benefícios do INSS, como auxílio por incapacidade e aposentadoria por idade.'},
+  {id:'t4',icon:'spark',name:'Previdência sem mistério',sub:'Aposentadoria para quem é autônomo',done:1,total:5,
+    lesson:'Previdência é tempo somado a constância. Um aporte pequeno, feito todo mês por muitos anos, costuma render mais do que um valor alto feito de vez em quando.'}
+];
+const WEEK = [['Seg',182],['Ter',240],['Qua',198],['Qui',265],['Sex',310],['Sáb',355],['Dom',140]];
+
+const S = {
+  plan:'protecao', hide:false, saude:false, vida:true, auto:true, notifRead:false,
+  reservas:[
+    {id:'casa',name:'Casa nova',value:4206.95,goal:30000},
+    {id:'play',name:'Playstation',value:1911.67,goal:4500},
+    {id:'grelha',name:'Grelha',value:1334.10,goal:1500},
+    {id:'presente',name:'Presente',value:555.78,goal:1200}
+  ],
+  movs:[
+    {t:'out',v:85,r:'Presente',d:'28/10/2026'},
+    {t:'in',v:150,r:'Playstation',d:'23/10/2026'},
+    {t:'in',v:45.30,r:'Grelha',d:'15/10/2026'},
+    {t:'in',v:578,r:'Casa nova',d:'02/10/2026'},
+    {t:'out',v:52,r:'Playstation',d:'25/09/2026'},
+    {t:'in',v:451,r:'Casa nova',d:'01/09/2026'}
+  ],
+  sim:{age:34,ret:62,amt:200},
+  open:{auto:true,vida:false,saude:false},
+  tab:'home', prev:'home'
+};
+const plan = () => PLANS[S.plan];
+const total = () => S.reservas.reduce((a,r)=>a+r.value,0);
+const money = v => S.hide ? 'R$ ••••' : brl(v);
+const today = () => { const d=new Date(2026,9,30); return d.toLocaleDateString('pt-BR'); };
+const score = () => Math.round(25*(S.auto?1:0) + 25*(S.vida?1:0) + 25*(S.saude?1:0) + 25*Math.min(1,total()/12000));
+
+function ring(pct,size,sw,inner='',grad='url(#gr)'){
+  const r=(size-sw)/2, c=2*Math.PI*r, off=c*(1-Math.min(1,Math.max(0,pct)));
+  return `<div class="ringwrap" style="width:${size}px;height:${size}px">
+    <svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" style="transform:rotate(-90deg)">
+      <circle class="ring-track" cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke-width="${sw}"/>
+      <circle class="ring-bar" cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="${grad}" stroke-width="${sw}" stroke-linecap="round" stroke-dasharray="${c}" stroke-dashoffset="${off}"/>
+    </svg><div class="rc">${inner}</div></div>`;
+}
+
+/* ---------------- views ---------------- */
+function vHome(){
+  const p=plan(), sc=score(), lvl=p.level-1, wk=WEEK.reduce((a,d)=>a+d[1],0), max=Math.max(...WEEK.map(d=>d[1]));
+  const save=Math.round(wk*0.10);
+  const perks=PERKS.slice(0,6).map(k=>{const d=k.d[lvl];return d?`<button class="perk" data-act="perk" data-id="${k.id}"><div class="pi">${icg(k.icon)}</div><div class="off num">${d}%</div><p>${k.name}</p><small>${k.where}</small></button>`
+    :`<button class="perk locked" data-act="goplanos"><span class="lk">${ic('lock',16)}</span><div class="pi">${ic(k.icon)}</div><div class="off" style="font-size:15px;line-height:1.5">Bloqueado</div><p>${k.name}</p><small>Disponível em planos maiores</small></button>`}).join('');
+  return `<div class="stack">
+  <div class="topbar rv" style="--i:0">
+    <div class="brand-mini">${SYM(46)}<div class="hello"><small>Bom dia,</small><b>Marcos</b></div></div>
+    <button class="icon-btn" data-act="notifs" aria-label="Notificações">${ic('bell')}${S.notifRead?'':'<span class="dot"></span>'}</button>
+  </div>
+
+  <div class="hero rv" style="--i:1">
+    <div class="hero-top">
+      <div><span class="eyebrow" style="color:#e2dcff">Seu plano</span><div class="plan-name">${p.name}</div><span style="font-size:12px;color:#d6d1ff">${p.ins}% off nos seguros parceiros</span></div>
+      <span class="chip"><i></i>ATIVO</span>
+    </div>
+    <div class="hero-body">
+      ${ring(sc/100,112,11,`<b class="num">${sc}%</b><small>REDE DE<br>PROTEÇÃO</small>`)}
+      <ul class="net">
+        <li class="${S.auto?'':'off'}"><span class="st">${ic(S.auto?'check':'plus',13)}</span><span>Seguro auto</span></li>
+        <li class="${S.vida?'':'off'}"><span class="st">${ic(S.vida?'check':'plus',13)}</span><span>Seguro de vida</span></li>
+        <li class="${S.saude?'':'off'}"><span class="st">${ic(S.saude?'check':'plus',13)}</span><span>Plano de saúde</span>${S.saude?'':'<em>pendente</em>'}</li>
+        <li class="${total()>=12000?'':'off'}"><span class="st">${ic(total()>=12000?'check':'coin',13)}</span><span>Reserva</span><em class="num">${Math.min(100,Math.round(total()/120))}%</em></li>
+      </ul>
+    </div>
+    ${S.saude?`<button class="hero-cta" data-act="tab" data-tab="aprender"><span>Próximo passo: <b>simule sua previdência</b> e veja quanto guardar por mês.</span><span class="go">${ic('right',16)}</span></button>`
+      :`<button class="hero-cta" data-act="cotar"><span>Complete sua rede: <b>plano de saúde com ${p.ins}% off</b> para clientes conte.</span><span class="go">${ic('right',16)}</span></button>`}
+  </div>
+
+  <div class="quick rv" style="--i:2">
+    <button class="qa" data-act="tab" data-tab="reservas"><span class="qi">${ic('target',24)}</span>Reservas</button>
+    <button class="qa" data-act="tab" data-tab="seguros"><span class="qi">${ic('shield',24)}</span>Seguros</button>
+    <button class="qa" data-act="tab" data-tab="aprender"><span class="qi">${ic('book',24)}</span>Aprender</button>
+    <button class="qa" data-act="push" data-view="beneficios"><span class="qi">${ic('gift',24)}</span>Benefícios</button>
+  </div>
+
+  <div class="card rv" style="--i:3">
+    <div class="earn-head"><div><span class="eyebrow">Ganhos da semana</span><div><b class="num">${money(wk)}</b></div></div><span class="delta">${ic('up',13)} 12% vs. semana passada</span></div>
+    <div class="chart" role="img" aria-label="Ganhos por dia da semana">
+      ${WEEK.map((d,i)=>`<div class="bar ${d[1]===max?'hi':''}"><i style="height:${Math.round(d[1]/max*92)}px;animation-delay:${i*60}ms" title="${brl(d[1])}"></i><span>${d[0]}</span></div>`).join('')}
+    </div>
+    <div class="save-row"><p>Guarde <b>10% da semana</b> e chegue mais rápido nas suas metas.</p><button class="btn sm" data-act="guardar" data-v="${save}">Guardar ${brl(save)}</button></div>
+  </div>
+
+  <div class="rv" style="--i:4">
+    <div class="sec-h"><h3>Benefícios para você</h3><button data-act="push" data-view="beneficios">Ver todos</button></div>
+    <div class="hscroll">${perks}</div>
+  </div>
+
+  <div class="tip rv" style="--i:5">
+    <div class="ti">${ic('spark',20)}</div>
+    <div><span class="eyebrow">Dica do dia</span><p>Carro parado também é custo. Reserve um valor fixo por semana para a manutenção e evite que um pneu furado vire uma dívida.</p></div>
+  </div>
+  </div>`;
+}
+
+function vReservas(){
+  const t=total();
+  const rc=S.reservas.map(r=>`<button class="rcard" data-act="reserva" data-id="${r.id}">
+    ${ring(r.value/r.goal,104,9,`<b class="num" style="font-size:18px">${Math.round(r.value/r.goal*100)}%</b>`)}
+    <span class="nm">${r.name}</span><span class="vv num">${money(r.value)}</span><small class="num">meta ${S.hide?'••••':brl(r.goal)}</small></button>`).join('');
+  return `<div class="stack">
+  <div class="topbar rv" style="--i:0"><div class="brand-mini">${SYM(40)}<span class="t">Reservas</span></div><button class="icon-btn" data-act="novaReserva" aria-label="Nova reserva">${ic('plus')}</button></div>
+  <div class="money-bar rv" style="--i:1"><div><small>Total guardado</small><span class="v num">${money(t)}</span></div><button class="eye" data-act="hide" aria-label="${S.hide?'Mostrar':'Ocultar'} valores">${ic(S.hide?'eyeoff':'eye',24)}</button></div>
+  <div class="actions2 rv" style="--i:2"><button class="btn" data-act="mov" data-t="in">${ic('up',18)}Guardar</button><button class="btn ghost" data-act="mov" data-t="out">${ic('down',18)}Resgatar</button></div>
+  <div class="rv" style="--i:3"><div class="sec-h"><h3>Minhas reservas</h3><button data-act="novaReserva">Nova meta</button></div>
+    <div class="hscroll rings">${rc}<button class="rcard add" data-act="novaReserva"><span class="pl">${ic('plus',26)}</span><span class="nm">Criar meta</span><small>Viagem, carro novo, emergência…</small></button></div></div>
+  <div class="card rv" style="--i:4"><div class="sec-h" style="margin-bottom:4px"><h3>Movimentações</h3><span class="eyebrow">${S.movs.length} itens</span></div>
+    <ul class="timeline">${S.movs.map(m=>`<li class="mov"><span class="tri ${m.t}">${ic(m.t==='in'?'up':'down',16)}</span><span class="md"><b>${m.r}</b><small class="num">${m.d} · ${m.t==='in'?'Depósito':'Resgate'}</small></span><span class="mv num ${m.t}">${m.t==='in'?'+':'−'} ${money(m.v)}</span></li>`).join('')}</ul>
+  </div></div>`;
+}
+
+function insSave(base){ const d=plan().ins; return {d, save: base*d/100}; }
+function vSeguros(){
+  const a=insSave(3480), v=insSave(624), p=plan();
+  const acc=(key,title,sub,icon,body)=>`<div class="acc ${S.open[key]?'open':''}"><button class="acc-h" data-act="acc" data-k="${key}" aria-expanded="${!!S.open[key]}">${ic(icon,24)}<span class="ah-t"><b>${title}</b><small>${sub}</small></span><span class="chev">${ic('chev')}</span></button><div class="acc-b"><div><div class="acc-in">${body}</div></div></div></div>`;
+  const auto=`<div class="vehicle"><div class="vtile"><div>${icg('car',40)}FIAT UNO</div></div>
+      <div class="kv"><div><small>Modelo</small><b>FIAT UNO 98</b></div><div><small>Placa</small><b>ABC1234</b></div><div><small>Apólice</small><b class="num">133.442.069.8008.5</b></div><div><small>Fim da vigência</small><b class="num">28/02/2029</b></div></div></div>
+    <div class="save-badge"><span>Economia conte no ano (${a.d}% off)</span><b class="num">${brl(a.save)}</b></div>
+    <button class="outline-btn" data-act="oficinas"><span class="ob-i">${ic('search')}</span><span>Buscar oficinas</span>${ic('right',18)}</button>
+    <button class="outline-btn" data-act="coberturas"><span class="ob-i">${ic('doc')}</span><span>Coberturas</span>${ic('right',18)}</button>`;
+  const vida=`<div class="kv"><div><small>Capital segurado</small><b class="num">R$ 150.000,00</b></div><div><small>Beneficiários</small><b>Ana e Lucas</b></div><div><small>Apólice</small><b class="num">208.117.540.0021.9</b></div><div><small>Mensalidade</small><b class="num">${brl(52*(1-v.d/100))}</b></div></div>
+    <div class="save-badge"><span>Desconto conte (${v.d}% off)</span><b class="num">${brl(v.save)}/ano</b></div>
+    <button class="outline-btn" data-act="beneficiarios"><span class="ob-i">${ic('users')}</span><span>Beneficiários</span>${ic('right',18)}</button>`;
+  const saude=S.saude?`<div class="kv"><div><small>Operadora</small><b>Parceira conte</b></div><div><small>Plano</small><b>Ambulatorial + hospitalar</b></div><div><small>Carteirinha</small><b class="num">0091 4420 7781</b></div><div><small>Vidas</small><b>${S.saudeFam?'3 (família)':'1 (titular)'}</b></div></div>
+    <button class="outline-btn" data-act="rede"><span class="ob-i">${ic('pin')}</span><span>Rede credenciada</span>${ic('right',18)}</button>`
+    :`<div class="empty-ins"><p>Você ainda não tem plano de saúde. Clientes ${p.name} têm <b style="color:var(--fg)">${p.ins}% de desconto</b> na contratação com a operadora parceira.</p><button class="btn block" data-act="cotar">Cotar plano de saúde</button></div>`;
+  return `<div class="stack">
+  <div class="topbar rv" style="--i:0"><div class="brand-mini">${SYM(40)}<span class="t">Seguros e Planos</span></div></div>
+  <button class="sos rv" style="--i:1" data-act="sos"><span class="si">${ic('phone',22)}</span><span><b>Assistência 24h</b><small>Guincho, pane seca, chaveiro e pneu</small></span></button>
+  <button class="add-ins rv" style="--i:2" data-act="addIns" aria-label="Adicionar seguro">${ic('plus',30)}</button>
+  <div class="rv" style="--i:3">
+    ${acc('auto','Seguro de automóvel','Ativo · FIAT UNO 98','car',auto)}
+    ${acc('vida','Seguro vida','Ativo · 2 beneficiários','heart',vida)}
+    ${acc('saude','Plano de saúde',S.saude?'Ativo':'Não contratado','health',saude)}
+  </div>
+  <p class="note rv" style="--i:4">A conte não é uma seguradora. Os seguros são contratados e pagos diretamente com as empresas parceiras; a conte garante descontos e condições especiais conforme o seu plano.</p>
+  </div>`;
+}
+
+function simCalc(){
+  const {age,ret,amt}=S.sim, n=Math.max(1,(ret-age)*12), i=0.006;
+  const fv=amt*((Math.pow(1+i,n)-1)/i);
+  const renda=fv*(i/(1-Math.pow(1+i,-240)));
+  return {fv,renda,n};
+}
+function vAprender(){
+  const s=simCalc(), done=TRACKS.reduce((a,t)=>a+t.done,0), all=TRACKS.reduce((a,t)=>a+t.total,0);
+  const pct=(v,mn,mx)=>((v-mn)/(mx-mn)*100).toFixed(1)+'%';
+  return `<div class="stack">
+  <div class="topbar rv" style="--i:0"><div class="brand-mini">${SYM(40)}<span class="t">Educação financeira</span></div></div>
+  <div class="card glass rv" style="--i:1;display:flex;gap:16px;align-items:center">
+    ${ring(done/all,84,9,`<b class="num" style="font-size:18px">${done}/${all}</b>`)}
+    <div style="min-width:0"><span class="eyebrow">Sua trilha</span><div style="font-family:var(--f-display);font-weight:700;font-size:17px;margin:4px 0">${done} aulas concluídas</div><small style="color:var(--muted);font-size:12.5px;line-height:1.45;display:block">Aulas curtas, de até 5 minutos, para ouvir entre uma corrida e outra.</small></div>
+  </div>
+  <div class="rv" style="--i:2"><div class="sec-h"><h3>Trilhas</h3></div>
+    ${TRACKS.map(t=>`<button class="track" data-act="lesson" data-id="${t.id}"><span class="tk-i">${icg(t.icon,24)}</span><span class="tk-b"><b>${t.name}</b><small>${t.sub}</small><div class="pbar"><i style="width:${t.done/t.total*100}%"></i></div></span><small class="num">${t.done}/${t.total}</small></button>`).join('')}
+  </div>
+  <div class="card sim rv" style="--i:3">
+    <span class="eyebrow">Simulador de previdência</span>
+    <div style="font-family:var(--f-display);font-weight:700;font-size:17px;margin-top:4px">Quanto você terá ao se aposentar?</div>
+    <div class="field"><label for="s-age">Idade atual <b class="num" id="o-age">${S.sim.age} anos</b></label><input id="s-age" type="range" min="18" max="60" value="${S.sim.age}" style="--p:${pct(S.sim.age,18,60)}"></div>
+    <div class="field"><label for="s-ret">Aposentar com <b class="num" id="o-ret">${S.sim.ret} anos</b></label><input id="s-ret" type="range" min="50" max="75" value="${S.sim.ret}" style="--p:${pct(S.sim.ret,50,75)}"></div>
+    <div class="field"><label for="s-amt">Guardar por mês <b class="num" id="o-amt">${brl(S.sim.amt)}</b></label><input id="s-amt" type="range" min="50" max="1500" step="25" value="${S.sim.amt}" style="--p:${pct(S.sim.amt,50,1500)}"></div>
+    <div class="out"><div class="big"><small>Valor acumulado</small><b class="num" id="o-fv">${brl(s.fv)}</b></div><div><small>Renda por 20 anos</small><b class="num" id="o-renda">${brl(s.renda)}/mês</b></div></div>
+    <p class="note" style="margin:12px 0 0">Simulação ilustrativa com rendimento de 0,6% ao mês, sem descontar inflação e impostos.</p>
+  </div></div>`;
+}
+
+function vPerfil(){
+  const p=plan();
+  return `<div class="stack">
+  <div class="topbar rv" style="--i:0"><span class="t">Perfil</span><button class="icon-btn" data-act="notifs" aria-label="Notificações">${ic('bell')}${S.notifRead?'':'<span class="dot"></span>'}</button></div>
+  <div class="profile rv" style="--i:1"><div class="avatar"><div>M</div></div><div><h2>Marcos Andrade</h2><p>Motorista de aplicativo · cliente desde mar/2026</p></div></div>
+  <div class="hero rv" style="--i:2;padding:18px">
+    <div class="hero-top"><div><span class="eyebrow" style="color:#e2dcff">Plano atual</span><div class="plan-name" style="font-size:21px">${p.name}</div><span class="num" style="font-size:12.5px;color:#d6d1ff">${brl(p.price)}/mês · renova em 12/11</span></div>
+    <span class="chip"><i></i>ATIVO</span></div>
+    <button class="hero-cta" data-act="goplanos"><span>Compare os planos e <b>mude quando quiser</b></span><span class="go">${ic('right',16)}</span></button>
+  </div>
+  <div class="menu rv" style="--i:3">
+    <button class="mi" data-act="dados"><span class="mi-i">${ic('user',20)}</span><span>Meus dados</span>${ic('right',18)}</button>
+    <button class="mi" data-act="familia"><span class="mi-i">${ic('users',20)}</span><span>Minha família</span><small>2 dependentes</small></button>
+    <button class="mi" data-act="atendimento"><span class="mi-i">${ic('headset',20)}</span><span>Atendimento</span><small>${p.level>1?'Prioritário':'Padrão'}</small></button>
+    <button class="mi" data-act="sobre"><span class="mi-i">${ic('info',20)}</span><span>Como a conte funciona</span>${ic('right',18)}</button>
+    <button class="mi" data-act="replay"><span class="mi-i">${ic('replay',20)}</span><span>Ver abertura de novo</span>${ic('right',18)}</button>
+  </div>
+  <div class="foot rv" style="--i:4">${SYM(40)}<span>conte · É ter com quem contar.<br>Uma conexão Clube Phi · protótipo v0.9</span></div>
+  </div>`;
+}
+
+function vPlanos(){
+  return `<div class="stack">
+  <div class="topbar rv" style="--i:0"><button class="back" data-act="back">${ic('back')}Voltar</button><span class="eyebrow">3 planos</span></div>
+  <div class="rv" style="--i:1"><div style="font-family:var(--f-display);font-weight:800;font-size:26px;letter-spacing:-.02em;line-height:1.1;text-wrap:balance">Escolha o tamanho da sua rede de proteção</div>
+    <p style="color:var(--muted);margin:8px 0 0;line-height:1.5;font-size:13px">Quanto maior o plano, maiores os descontos nos seguros e parceiros. Os seguros são pagos à parte, direto com a parceira.</p></div>
+  <div class="rv" style="--i:2;padding-top:10px">
+  ${Object.values(PLANS).map(p=>{const cur=p.key===S.plan;return `<div class="plan ${cur?'cur':''}">${cur?'<span class="cur-badge">Seu plano</span>':''}<div>
+    <div class="plan-h"><div><h4>${p.short}</h4><div class="tg">${p.tag}</div></div><div class="price"><b class="num">${brl(p.price)}</b><small>por mês</small></div></div>
+    <div class="lv">${[1,2,3].map(n=>`<i class="${n<=p.level?'on':''}"></i>`).join('')}</div>
+    <ul>${p.items.map(t=>`<li>${ic('check',16)}<span>${t}</span></li>`).join('')}</ul>
+    <p class="prop">${p.prop}</p>
+    <div class="pf"><span class="disc-pill">${ic('shield',14)} ${p.ins}% off em seguros</span>${cur?'<span class="eyebrow">Ativo</span>':`<button class="btn sm" data-act="pickPlan" data-p="${p.key}">Escolher</button>`}</div>
+  </div></div>`}).join('')}
+  </div>
+  <p class="note rv" style="--i:3">Valores e percentuais ilustrativos. A estrutura final dos planos será validada em pesquisa com motoristas de aplicativo, taxistas e caminhoneiros.</p>
+  </div>`;
+}
+
+function vBeneficios(){
+  const lvl=plan().level-1;
+  return `<div class="stack">
+  <div class="topbar rv" style="--i:0"><button class="back" data-act="back">${ic('back')}Voltar</button><span class="disc-pill">${plan().short}</span></div>
+  <div class="rv" style="--i:1"><div style="font-family:var(--f-display);font-weight:800;font-size:26px;letter-spacing:-.02em">Benefícios</div><p style="color:var(--muted);margin:6px 0 0;font-size:13px;line-height:1.5">Descontos em parceiros para você, seu carro e sua família. Mostre o cartão conte ou use o cupom no app.</p></div>
+  <div class="card rv" style="--i:2;padding:6px 16px"><div class="list">
+  ${PERKS.map(k=>{const d=k.d[lvl];return `<button class="li" style="width:100%;text-align:left" data-act="${d?'perk':'goplanos'}" data-id="${k.id}"><span class="li-i">${ic(k.icon,20)}</span><span class="li-b"><b>${k.name}</b><small>${k.where}</small></span>${d?`<span class="tag num">${d}% off</span>`:`<span class="tag no">${ic('lock',12)} ${k.d[1]?'Proteção':'Completo'}</span>`}</button>`}).join('')}
+  </div></div>
+  <div class="tip rv" style="--i:3"><div class="ti">${ic('users',20)}</div><div><span class="eyebrow">Para os parceiros</span><p>Empresas parceiras alcançam um público que precisa de proteção e oferecem condições exclusivas para clientes conte.</p></div></div>
+  </div>`;
+}
+
+const VIEWS={home:vHome,reservas:vReservas,seguros:vSeguros,aprender:vAprender,perfil:vPerfil,planos:vPlanos,beneficios:vBeneficios};
+function render(which){
+  (which?[which]:Object.keys(VIEWS)).forEach(k=>{ const el=$('#v-'+k); const st=el.scrollTop; el.innerHTML=VIEWS[k](); el.scrollTop=st; });
+  bindSim();
+}
+
+/* ---------------- nav ---------------- */
+const TABS=[['home','Início','home'],['reservas','Reservas','target'],['seguros','Seguros','shield'],['aprender','Aprender','book'],['perfil','Perfil','user']];
+$('#tabbar').innerHTML=TABS.map(t=>`<button class="tab" data-act="tab" data-tab="${t[0]}"><span class="tglow"></span>${ic(t[2],22)}<span>${t[1]}</span></button>`).join('');
+function show(view){
+  document.querySelectorAll('.view').forEach(v=>v.classList.toggle('active',v.id==='v-'+view));
+  const tab = TABS.some(t=>t[0]===view)?view:S.tab;
+  document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));
+  const el=$('#v-'+view); el.scrollTop=0;
+  // replay reveal
+  el.querySelectorAll('.rv').forEach(n=>{n.style.animation='none';n.offsetHeight;n.style.animation='';});
+}
+function goTab(t){ S.tab=t; render(t); show(t); }
+function push(v){ S.prev=S.tab; render(v); show(v); }
+
+/* ---------------- sheet & toast ---------------- */
+function openSheet(html){ $('#sheetBody').innerHTML=html; $('#sheet').scrollTop=0; $('#backdrop').classList.add('on'); $('#sheet').classList.add('on'); }
+function closeSheet(){ $('#backdrop').classList.remove('on'); $('#sheet').classList.remove('on'); }
+let tt; function toast(msg){ $('#toastTxt').textContent=msg; $('#toast i').innerHTML=ic('check',14); $('#toast').classList.add('on'); clearTimeout(tt); tt=setTimeout(()=>$('#toast').classList.remove('on'),2600); }
+$('#backdrop').addEventListener('click',closeSheet);
+
+const success=(title,sub)=>`<div class="success"><div class="ok">${ic('check',38)}</div><h3>${title}</h3><p class="sub" style="margin:0">${sub}</p><button class="btn block" data-act="close" style="margin-top:8px">Fechar</button></div>`;
+
+function sheetMov(type,preset,reservaId){
+  let sel=reservaId||S.reservas[0].id;
+  openSheet(`<h3>${type==='in'?'Guardar dinheiro':'Resgatar dinheiro'}</h3><p class="sub">${type==='in'?'Escolha a meta e quanto quer guardar.':'O valor volta para a sua conta na hora.'}</p>
+   <div class="stack">
+   <div class="opts" id="mvOpts">${S.reservas.map(r=>`<button class="opt ${r.id===sel?'on':''}" data-r="${r.id}">${r.name}</button>`).join('')}</div>
+   <label class="sr" for="mvVal">Valor</label>
+   <div class="amount"><span>R$</span><input id="mvVal" inputmode="decimal" value="${preset?String(preset).replace('.',','):''}" placeholder="0,00"></div>
+   <div class="opts">${[20,50,100,200].map(v=>`<button class="opt" data-q="${v}">+ ${v}</button>`).join('')}</div>
+   <p class="note" id="mvErr" style="color:#ff8fc6;margin:0;min-height:16px"></p>
+   <button class="btn block" id="mvGo">${type==='in'?'Guardar':'Resgatar'}</button></div>`);
+  const inp=$('#mvVal');
+  $('#mvOpts').onclick=e=>{const b=e.target.closest('[data-r]'); if(!b)return; sel=b.dataset.r; document.querySelectorAll('#mvOpts .opt').forEach(o=>o.classList.toggle('on',o===b));};
+  document.querySelectorAll('[data-q]').forEach(b=>b.onclick=()=>{const cur=parseFloat((inp.value||'0').replace(/\./g,'').replace(',','.'))||0; inp.value=(cur+ +b.dataset.q).toFixed(2).replace('.',',');});
+  $('#mvGo').onclick=()=>{
+    const v=parseFloat((inp.value||'').replace(/\./g,'').replace(',','.'));
+    const r=S.reservas.find(x=>x.id===sel);
+    if(!v||v<=0){$('#mvErr').textContent='Digite um valor maior que zero.';return;}
+    if(type==='out'&&v>r.value){$('#mvErr').textContent=`Você tem ${brl(r.value)} em ${r.name}. Digite um valor menor.`;return;}
+    r.value=Math.round((r.value+(type==='in'?v:-v))*100)/100;
+    S.movs.unshift({t:type,v,r:r.name,d:today()});
+    render();
+    openSheet(success(type==='in'?'Dinheiro guardado':'Resgate feito',`${brl(v)} ${type==='in'?'em':'de'} ${r.name}. Agora você tem ${brl(r.value)} nessa meta.`));
+  };
+}
+
+/* ---------------- actions ---------------- */
+document.addEventListener('click',e=>{
+  const b=e.target.closest('[data-act]'); if(!b) return;
+  const a=b.dataset.act, id=b.dataset.id;
+  switch(a){
+    case 'tab': closeSheet(); goTab(b.dataset.tab); break;
+    case 'push': push(b.dataset.view); break;
+    case 'back': goTab(S.prev||'home'); break;
+    case 'goplanos': closeSheet(); push('planos'); break;
+    case 'close': closeSheet(); break;
+    case 'hide': S.hide=!S.hide; render(); break;
+    case 'acc': S.open[b.dataset.k]=!S.open[b.dataset.k]; b.closest('.acc').classList.toggle('open'); b.setAttribute('aria-expanded',S.open[b.dataset.k]); break;
+    case 'mov': sheetMov(b.dataset.t); break;
+    case 'guardar': sheetMov('in',b.dataset.v); break;
+    case 'reserva': {
+      const r=S.reservas.find(x=>x.id===id), falta=Math.max(0,r.goal-r.value), wk=Math.max(1,Math.ceil(falta/150));
+      openSheet(`<div style="display:flex;gap:16px;align-items:center;margin-bottom:16px">${ring(r.value/r.goal,96,9,`<b class="num" style="font-size:18px">${Math.round(r.value/r.goal*100)}%</b>`)}<div><h3>${r.name}</h3><p class="sub" style="margin:0" class="num">${brl(r.value)} de ${brl(r.goal)}</p></div></div>
+      <div class="card" style="padding:14px;margin-bottom:14px"><span class="eyebrow">Previsão</span><p style="margin:6px 0 0;font-size:13.5px;line-height:1.5">${falta?`Guardando <b>R$ 150 por semana</b>, você chega lá em cerca de <b>${wk} semanas</b>.`:'Meta concluída. Hora de comemorar!'}</p></div>
+      <div class="actions2"><button class="btn" data-act="movR" data-t="in" data-id="${r.id}">${ic('up',18)}Guardar</button><button class="btn ghost" data-act="movR" data-t="out" data-id="${r.id}">${ic('down',18)}Resgatar</button></div>`);
+      break; }
+    case 'movR': sheetMov(b.dataset.t,null,id); break;
+    case 'novaReserva':
+      openSheet(`<h3>Nova meta</h3><p class="sub">Dê um nome e um valor para começar a guardar.</p><div class="stack">
+        <label class="sr" for="nrName">Nome da meta</label><input class="tinput" id="nrName" placeholder="Ex.: Viagem para a praia" maxlength="22">
+        <div class="opts" id="nrSug">${['Emergência','Carro novo','Viagem','IPVA 2027'].map(s=>`<button class="opt">${s}</button>`).join('')}</div>
+        <label class="sr" for="nrGoal">Valor da meta</label><div class="amount"><span>R$</span><input id="nrGoal" inputmode="decimal" placeholder="0,00"></div>
+        <p class="note" id="nrErr" style="color:#ff8fc6;margin:0;min-height:16px"></p>
+        <button class="btn block" id="nrGo">Criar meta</button></div>`);
+      $('#nrSug').onclick=ev=>{const o=ev.target.closest('.opt'); if(o) $('#nrName').value=o.textContent;};
+      $('#nrGo').onclick=()=>{const n=$('#nrName').value.trim(), g=parseFloat(($('#nrGoal').value||'').replace(/\./g,'').replace(',','.'));
+        if(!n){$('#nrErr').textContent='Dê um nome para a meta.';return;} if(!g||g<=0){$('#nrErr').textContent='Digite o valor que quer alcançar.';return;}
+        S.reservas.push({id:'r'+Date.now(),name:n,value:0,goal:g}); render(); openSheet(success('Meta criada',`${n}: ${brl(g)}. Toque nela em Reservas para fazer o primeiro depósito.`));};
+      break;
+    case 'notifs':
+      S.notifRead=true; render();
+      openSheet(`<h3>Notificações</h3><p class="sub">O que aconteceu na sua conta.</p>
+        ${[['Seu desconto aumentou','Com o plano '+plan().short+', seu seguro auto tem '+plan().ins+'% de desconto na renovação.','Hoje, 08:12'],['Meta quase lá','A Grelha está em '+Math.round(S.reservas[2].value/S.reservas[2].goal*100)+'%. Falta pouco!','Ontem'],['Revisão preventiva','Seu Uno passou de 120 mil km. Veja oficinas com desconto.','26/10'],['Nova aula disponível','"Como declarar o MEI" já está na sua trilha.','22/10']]
+        .map((n,i)=>`<div class="notif ${i>1?'read':''}"><span class="nd"></span><div><b>${n[0]}</b><p>${n[1]}</p><small>${n[2]}</small></div></div>`).join('')}`);
+      break;
+    case 'perk': {
+      const k=PERKS.find(x=>x.id===id), d=k.d[plan().level-1], code='CONTE'+id.toUpperCase()+d;
+      openSheet(`<div style="display:flex;gap:14px;align-items:center;margin-bottom:14px"><div class="tk-i" style="width:54px;height:54px;border-radius:18px;display:grid;place-items:center;background:var(--surface-2)">${icg(k.icon,28)}</div><div><h3>${k.name}</h3><p class="sub" style="margin:0">${k.where}</p></div></div>
+        <div class="hero" style="text-align:center;padding:22px"><span class="eyebrow" style="color:#e2dcff">Seu desconto</span><div class="plan-name num" style="font-size:44px">${d}% off</div><span style="font-size:12px;color:#d6d1ff">Plano ${plan().short}</span></div>
+        <div class="phone-num" style="margin-top:14px"><div><small style="color:var(--muted);font-size:11px;display:block">Cupom</small><b id="cupom">${code}</b></div><button class="btn sm ghost" data-act="copy" data-txt="${code}">Copiar</button></div>
+        <p class="note" style="margin:12px 0 0">Apresente o cupom ou o cartão conte no parceiro. Válido para o titular${plan().level>1?' e dependentes':''}.</p>`);
+      break; }
+    case 'copy': {
+      const t=b.dataset.txt;
+      (navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(()=>toast('Copiado: '+t)).catch(()=>{const el=b.previousElementSibling&&b.previousElementSibling.querySelector('b'); if(el){const r=document.createRange(); r.selectNodeContents(el); const s=getSelection(); s.removeAllRanges(); s.addRange(r);} toast('Selecionado. Copie com o menu do celular.');});
+      break; }
+    case 'sos':
+      openSheet(`<h3>Assistência 24h</h3><p class="sub">Precisa de ajuda na rua? A assistência da seguradora parceira atende a qualquer hora.</p>
+        <div class="phone-num"><div><small style="color:var(--muted);font-size:11px;display:block">Central (número de exemplo)</small><b class="num">0800 000 2026</b></div><button class="btn sm ghost" data-act="copy" data-txt="0800 000 2026">Copiar</button></div>
+        <div class="opts" style="margin:16px 0">${['Guincho','Pane seca','Troca de pneu','Chaveiro','Bateria'].map(s=>`<button class="opt" data-act="sosPick" data-s="${s}">${s}</button>`).join('')}</div>
+        <p class="note" style="margin:0">Escolha o serviço para abrir um chamado com sua localização e os dados do FIAT UNO 98.</p>`);
+      break;
+    case 'sosPick':
+      openSheet(success('Chamado aberto',`${b.dataset.s} a caminho. Previsão de chegada: 35 minutos. Você recebe as atualizações por aqui.`)); break;
+    case 'oficinas':
+      openSheet(`<h3>Oficinas referenciadas</h3><p class="sub">Perto de você, com desconto para clientes conte.</p><div class="list">
+        ${[['Oficina Rota Certa','1,2 km · Funilaria e mecânica',plan().level>1?'10% off':'5% off'],['Auto Mecânica Avenida','2,8 km · Mecânica geral',plan().level>1?'12% off':'5% off'],['Centro Automotivo Ponte','3,5 km · Elétrica e injeção','Carro reserva'],['Borracharia 24h Marginal','4,1 km · Pneus','Aberto agora']]
+        .map(o=>`<div class="li"><span class="li-i">${ic('pin',20)}</span><span class="li-b"><b>${o[0]}</b><small>${o[1]}</small></span><span class="tag">${o[2]}</span></div>`).join('')}</div>
+        <p class="note" style="margin:12px 0 0">Nomes e endereços de exemplo para o protótipo.</p>`); break;
+    case 'coberturas':
+      openSheet(`<h3>Coberturas</h3><p class="sub">Apólice 133.442.069.8008.5 · FIAT UNO 98</p><div class="list">
+        ${[['Colisão e incêndio','Indenização até 100% da FIPE',1],['Roubo e furto','Cobertura total',1],['Danos a terceiros','Até R$ 100.000,00',1],['Assistência 24h','Guincho até 400 km',1],['Carro reserva','7 dias por sinistro',1],['Diária por carro parado','R$ 150/dia para motorista de app, até 15 dias',plan().level>1],['Vidros e faróis','Franquia reduzida',plan().level>2]]
+        .map(c=>`<div class="li"><span class="li-i">${ic(c[2]?'check':'lock',18)}</span><span class="li-b"><b>${c[0]}</b><small>${c[1]}</small></span><span class="tag ${c[2]?'':'no'}">${c[2]?'Incluso':(c[0].startsWith('Diária')?'Proteção':'Completo')}</span></div>`).join('')}</div>`); break;
+    case 'beneficiarios':
+      openSheet(`<h3>Beneficiários</h3><p class="sub">Quem recebe o seguro de vida.</p><div class="list"><div class="li"><span class="li-i">${ic('user',20)}</span><span class="li-b"><b>Ana Andrade</b><small>Cônjuge</small></span><span class="tag">60%</span></div><div class="li"><span class="li-i">${ic('user',20)}</span><span class="li-b"><b>Lucas Andrade</b><small>Filho</small></span><span class="tag">40%</span></div></div>`); break;
+    case 'rede':
+      openSheet(`<h3>Rede credenciada</h3><p class="sub">Atendimento perto de você.</p><div class="list">${[['Pronto-socorro Central','Urgência 24h · 2,1 km'],['Clínica Bem Estar','Consultas e exames · 3,0 km'],['Laboratório Vida','Exames · 1,4 km']].map(o=>`<div class="li"><span class="li-i">${ic('health',18)}</span><span class="li-b"><b>${o[0]}</b><small>${o[1]}</small></span></div>`).join('')}</div><p class="note" style="margin:12px 0 0">Locais de exemplo.</p>`); break;
+    case 'addIns':
+      openSheet(`<h3>Adicionar proteção</h3><p class="sub">Cote com as parceiras da conte e garanta ${plan().ins}% de desconto.</p><div class="list">
+        ${[['car','Seguro auto','Para outro veículo','Cotar'],['heart','Seguro de vida','Ampliar cobertura','Cotar'],['health','Plano de saúde',S.saude?'Já contratado':'Você e sua família',S.saude?'Ativo':'Cotar'],['shield','Seguro de acidentes pessoais','Renda garantida se você parar','Cotar'],['phone','Seguro de celular','Seu instrumento de trabalho','Cotar']]
+        .map(o=>`<button class="li" style="width:100%;text-align:left" data-act="${o[2]==='Já contratado'?'close':(o[0]==='health'?'cotar':'cotarGen')}" data-n="${o[1]}"><span class="li-i">${ic(o[0],20)}</span><span class="li-b"><b>${o[1]}</b><small>${o[2]}</small></span><span class="tag ${o[3]==='Ativo'?'':'no'}">${o[3]}</span></button>`).join('')}</div>`); break;
+    case 'cotarGen':
+      openSheet(success('Cotação solicitada',`Uma parceira vai enviar a proposta de ${b.dataset.n.toLowerCase()} com o seu desconto conte em até 24 horas.`)); break;
+    case 'cotar': {
+      const base=289; let fam=false;
+      const draw=()=>{const qty=fam?3:1, gross=base*qty, net=gross*(1-plan().ins/100);
+        openSheet(`<h3>Plano de saúde</h3><p class="sub">Cotação com a operadora parceira, já com o desconto do seu plano.</p><div class="stack">
+          <div class="opts"><button class="opt ${fam?'':'on'}" data-act="famT" data-f="0">Só eu</button><button class="opt ${fam?'on':''}" data-act="famT" data-f="1">Eu + 2 dependentes</button></div>
+          <div class="card" style="padding:16px"><div style="display:flex;justify-content:space-between;font-size:13px;color:var(--muted)"><span>Preço de tabela</span><s class="num">${brl(gross)}</s></div>
+          <div style="display:flex;justify-content:space-between;font-size:13px;margin-top:8px"><span>Desconto ${plan().short} (${plan().ins}%)</span><span class="num" style="color:var(--ok)">− ${brl(gross-net)}</span></div>
+          <div style="display:flex;justify-content:space-between;align-items:baseline;margin-top:12px;padding-top:12px;border-top:1px solid var(--line)"><span style="font-weight:600">Você paga</span><b class="num" style="font-family:var(--f-display);font-size:24px">${brl(net)}<small style="font-size:12px;color:var(--muted)">/mês</small></b></div></div>
+          <p class="note" style="margin:0">Valor pago direto à operadora parceira, separado da assinatura conte. Valores ilustrativos.</p>
+          <button class="btn block" data-act="contratarSaude">Contratar com a parceira</button></div>`);};
+      window.__fam=v=>{fam=v;draw();}; draw(); window.__famV=()=>fam; break; }
+    case 'famT': window.__fam(b.dataset.f==='1'); break;
+    case 'contratarSaude':
+      S.saude=true; S.saudeFam=window.__famV&&window.__famV(); S.open.saude=true; render();
+      openSheet(success('Plano de saúde ativo','Sua rede de proteção subiu para '+score()+'%. A carteirinha digital já está em Seguros.')); break;
+    case 'lesson': {
+      const t=TRACKS.find(x=>x.id===id);
+      openSheet(`<span class="eyebrow">${t.name} · aula ${Math.min(t.done+1,t.total)} de ${t.total}</span><h3 style="margin-top:6px">${t.sub}</h3>
+        <div class="tip" style="margin:14px 0"><div class="ti">${ic('book',20)}</div><p style="margin:0">${t.lesson}</p></div>
+        <div class="pbar" style="margin-bottom:16px"><i style="width:${t.done/t.total*100}%"></i></div>
+        <button class="btn block" data-act="doneLesson" data-id="${t.id}" ${t.done>=t.total?'disabled':''}>${t.done>=t.total?'Trilha concluída':'Concluir aula'}</button>`); break; }
+    case 'doneLesson': {
+      const t=TRACKS.find(x=>x.id===id); t.done=Math.min(t.total,t.done+1); render(); closeSheet(); toast('Aula concluída. Boa, Marcos!'); break; }
+    case 'pickPlan': {
+      const p=PLANS[b.dataset.p], up=p.level>plan().level;
+      openSheet(`<h3>Mudar para ${p.name}?</h3><p class="sub">${up?'Você ganha mais descontos e benefícios a partir de hoje.':'Alguns benefícios deixam de valer no próximo ciclo.'}</p>
+        <div class="card" style="padding:16px;display:grid;gap:10px">
+          <div style="display:flex;justify-content:space-between"><span style="color:var(--muted)">Mensalidade</span><b class="num">${brl(p.price)}</b></div>
+          <div style="display:flex;justify-content:space-between"><span style="color:var(--muted)">Desconto em seguros</span><b class="num">${plan().ins}% → ${p.ins}%</b></div>
+          <div style="display:flex;justify-content:space-between"><span style="color:var(--muted)">Atendimento</span><b>${p.level>1?'Prioritário':'Padrão'}</b></div></div>
+        <div class="actions2" style="margin-top:16px"><button class="btn ghost" data-act="close">Cancelar</button><button class="btn" data-act="confirmPlan" data-p="${p.key}">Confirmar</button></div>`); break; }
+    case 'confirmPlan':
+      S.plan=b.dataset.p; render(); openSheet(success('Plano atualizado',`Agora você é ${plan().name}. Seus descontos já foram atualizados em seguros e benefícios.`)); break;
+    case 'dados':
+      openSheet(`<h3>Meus dados</h3><p class="sub">Dados de exemplo do protótipo.</p><div class="list">${[['Nome','Marcos Andrade'],['Profissão','Motorista de aplicativo'],['Veículo','FIAT UNO 98 · ABC1234'],['Cidade','São Paulo, SP'],['MEI','Ativo']].map(d=>`<div class="li"><span class="li-b"><small>${d[0]}</small><b>${d[1]}</b></span></div>`).join('')}</div>`); break;
+    case 'familia':
+      openSheet(`<h3>Minha família</h3><p class="sub">${plan().level>1?'Seus dependentes também usam os benefícios conte.':'Benefícios para a família estão disponíveis a partir do plano Proteção.'}</p><div class="list"><div class="li"><span class="li-i">${ic('user',20)}</span><span class="li-b"><b>Ana Andrade</b><small>Cônjuge</small></span><span class="tag ${plan().level>1?'':'no'}">${plan().level>1?'Ativa':'Bloqueado'}</span></div><div class="li"><span class="li-i">${ic('user',20)}</span><span class="li-b"><b>Lucas Andrade</b><small>Filho, 9 anos</small></span><span class="tag ${plan().level>1?'':'no'}">${plan().level>1?'Ativo':'Bloqueado'}</span></div></div>${plan().level>1?'':'<button class="btn block" data-act="goplanos" style="margin-top:14px">Ver planos</button>'}`); break;
+    case 'atendimento': {
+      const pri=plan().level>1;
+      openSheet(`<h3>Atendimento ${pri?'prioritário':''}</h3><p class="sub">${pri?'Tempo médio de resposta: 2 minutos.':'Tempo médio de resposta: 15 minutos.'}</p>
+        <div class="chat" id="chat"><div class="msg bot">Oi, Marcos! Sou a assistente da conte. Como posso te ajudar hoje?</div></div>
+        <div class="opts" style="margin-top:16px" id="quick">${['Como uso meu desconto?','Meu carro quebrou','Quero mudar de plano'].map(q=>`<button class="opt" data-act="ask" data-q="${q}">${q}</button>`).join('')}</div>`); break; }
+    case 'ask': {
+      const A={'Como uso meu desconto?':`É só mostrar o cartão conte ou o cupom do app no parceiro. Nos seguros, o desconto de ${plan().ins}% entra direto na cotação.`,
+        'Meu carro quebrou':'Sinto muito! Acione a Assistência 24h na aba Seguros. O guincho chega em média em 35 minutos e você ainda tem carro reserva.',
+        'Quero mudar de plano':'Claro. Em Perfil, toque em "Compare os planos". A mudança vale na hora e os descontos são atualizados automaticamente.'};
+      const c=$('#chat'); c.insertAdjacentHTML('beforeend',`<div class="msg me">${b.dataset.q}</div>`); b.remove();
+      setTimeout(()=>{c.insertAdjacentHTML('beforeend',`<div class="msg bot">${A[b.dataset.q]}</div>`); $('#sheet').scrollTop=9999;},600); break; }
+    case 'sobre':
+      openSheet(`<h3>Como a conte funciona</h3><p class="sub">Uma plataforma de benefícios para quem trabalha com o próprio veículo: motoristas de app, taxistas e caminhoneiros autônomos.</p>
+        <div class="model">
+          <div><span class="n">1</span><span><b>Você assina a conte</b><p>Paga uma mensalidade e escolhe entre Essencial, Proteção ou Completo.</p></span></div>
+          <div><span class="n">2</span><span><b>A conte reúne tudo</b><p>Organiza benefícios, ferramentas financeiras e descontos num só app, pensado para o transporte.</p></span></div>
+          <div><span class="n">3</span><span><b>Parceiros oferecem condições</b><p>Seguradoras e empresas alcançam um público que precisa de proteção e dão descontos exclusivos.</p></span></div>
+        </div><p class="note" style="margin:14px 0 0">A conte não é seguradora: o seguro é contratado e pago à parte, com desconto.</p>`); break;
+    case 'replay': closeSheet(); startSplash(); break;
+  }
+});
+
+function bindSim(){
+  const ids=['age','ret','amt'], rng={age:[18,60],ret:[50,75],amt:[50,1500]};
+  ids.forEach(k=>{const el=$('#s-'+k); if(!el) return; el.oninput=()=>{
+    S.sim[k]=+el.value;
+    if(S.sim.ret<=S.sim.age+1){ if(k==='age'){S.sim.ret=Math.min(75,S.sim.age+2); $('#s-ret').value=S.sim.ret;} else {S.sim.age=Math.max(18,S.sim.ret-2); $('#s-age').value=S.sim.age;} }
+    ids.forEach(j=>{const e=$('#s-'+j); e.style.setProperty('--p',((S.sim[j]-rng[j][0])/(rng[j][1]-rng[j][0])*100)+'%');});
+    $('#o-age').textContent=S.sim.age+' anos'; $('#o-ret').textContent=S.sim.ret+' anos'; $('#o-amt').textContent=brl(S.sim.amt);
+    const s=simCalc(); $('#o-fv').textContent=brl(s.fv); $('#o-renda').textContent=brl(s.renda)+'/mês';
+  };});
+}
+
+/* ---------------- splash ---------------- */
+const scr=$('#screen'), sp=$('#splash');
+const path=$('#spPath'); const len=Math.ceil(path.getTotalLength()); path.style.setProperty('--len',len);
+let timers=[], entered=false;
+function enter(){
+  if(entered) return; entered=true; timers.forEach(clearTimeout);
+  sp.classList.add('out'); scr.classList.remove('pre'); scr.classList.add('app-in');
+  S.tab='home'; render(); show('home');
+  setTimeout(()=>toast('Bem-vindo de volta, Marcos'),700);
+}
+function startSplash(){
+  entered=false; timers.forEach(clearTimeout); timers=[];
+  scr.classList.add('pre'); sp.classList.remove('out');
+  // restart CSS animations
+  sp.querySelectorAll('*').forEach(n=>{n.style.animation='none'; n.offsetHeight; n.style.animation='';});
+  const sc=$('#scan'); sc.classList.remove('ok'); $('#scanTxt').innerHTML='Reconhecendo você…';
+  $('#scanIcon').innerHTML='<path d="M4 8V6a2 2 0 0 1 2-2h2M16 4h2a2 2 0 0 1 2 2v2M20 16v2a2 2 0 0 1-2 2h-2M8 20H6a2 2 0 0 1-2-2v-2"/><path d="M9 10v1M15 10v1M12 10v3h-1M9.5 16c1.5 1 3.5 1 5 0"/>';
+  const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  timers.push(setTimeout(()=>{sc.classList.add('ok'); $('#scanIcon').innerHTML=P.check; $('#scanTxt').innerHTML='Olá, <b>Marcos</b>';}, reduce?600:4600));
+  timers.push(setTimeout(enter, reduce?1400:5600));
+}
+sp.addEventListener('click',enter);
+sp.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' ')enter();});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeSheet();});
+
+render(); startSplash();
+})();
+</script>
+
+</body></html>
